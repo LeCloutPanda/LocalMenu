@@ -8,7 +8,7 @@ namespace LocalMenu
     {
         public override string Name => "Local Menu";
         public override string Author => "LeCloutPanda";
-        public override string Version => "1.0.0";
+        public override string Version => "1.0.1";
 
         public static ModConfiguration config;
 
@@ -34,6 +34,8 @@ namespace LocalMenu
             {
                 __instance.RunInUpdates(3, () =>
                 {
+                    Msg("Creating value user override");
+
                     if (__instance.Slot.ActiveUserRoot.ActiveUser != __instance.LocalUser)
                         return;
 
