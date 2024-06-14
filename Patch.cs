@@ -9,6 +9,7 @@ namespace LocalMenu
         public override string Name => "Local Menu";
         public override string Author => "LeCloutPanda";
         public override string Version => "1.0.1";
+        public override string Link => "https://github.com/LeCloutPanda/LocalMenu/";
 
         public static ModConfiguration config;
 
