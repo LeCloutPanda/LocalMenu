@@ -8,13 +8,14 @@ namespace LocalMenu
     {
         public override string Name => "Local Menu";
         public override string Author => "LeCloutPanda";
-        public override string Version => "1.0.1";
+        public override string Version => "1.0.2";
         public override string Link => "https://github.com/LeCloutPanda/LocalMenu/";
 
         public static ModConfiguration config;
 
-        [AutoRegisterConfigKey] private static ModConfigurationKey<bool> CONTEXT_MENU_VISIBLE = new ModConfigurationKey<bool>("Allow others to see Context menu", "", () => true);
-        [AutoRegisterConfigKey] private static ModConfigurationKey<bool> INTERACTION_LASER_VISIBLE = new ModConfigurationKey<bool>("Allow others to see Interaction Laser", "", () => true);
+        [AutoRegisterConfigKey] private static ModConfigurationKey<bool> ENABLED = new ModConfigurationKey<bool>("Enabled", "", () => true);
+        [AutoRegisterConfigKey] private static ModConfigurationKey<bool> CONTEXT_MENU_VISIBLE = new ModConfigurationKey<bool>("Allow others to see your Context menu", "", () => true);
+        [AutoRegisterConfigKey] private static ModConfigurationKey<bool> INTERACTION_LASER_VISIBLE = new ModConfigurationKey<bool>("Allow others to see your Interaction Lasers", "", () => true);
 
         public override void OnEngineInit()
         {
@@ -33,6 +34,8 @@ namespace LocalMenu
             [HarmonyPatch("OnAwake")]
             static void Postfix(ContextMenu __instance)
             {
+                if (!config.GetValue(ENABLED)) return;
+
                 __instance.RunInUpdates(3, () =>
                 {
                     Msg("Creating value user override");
@@ -57,6 +60,8 @@ namespace LocalMenu
             [HarmonyPatch("OnAwake")]
             static void Postfix(InteractionLaser __instance)
             {
+                if (!config.GetValue(ENABLED)) return;
+
                 __instance.RunInUpdates(3, () =>
                 {
                     if (__instance.Slot.ActiveUserRoot.ActiveUser != __instance.LocalUser)
