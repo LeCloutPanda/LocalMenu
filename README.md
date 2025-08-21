@@ -1,5 +1,5 @@
 # Context Menu Funnies
-A [Resonite](https://resonite.com/) that allows the user to make their context menu and lasers visible to only them self.
+A [Resonite](https://resonite.com/) mod that allows the user to make their context menu and lasers visible to only them self.
 
 # BepisLoader Installation
 1. Install [BepisLoader](https://github.com/ResoniteModding/BepisLoader).
