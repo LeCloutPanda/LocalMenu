@@ -1,20 +1,15 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.NET.Common;
 using BepInExResoniteShim;
 using FrooxEngine;
 using HarmonyLib;
 
 namespace LocalMenu;
 
-[BepInPlugin(GUID, Name, Version)]
-public class Patch : BaseResonitePlugin
+[ResonitePlugin("dev.lecloutpanda.localmenu", "Default Laser State", "1.0.3", "LeCloutPanda", "https://github.com/LeCloutPanda/localmenu")]
+public class Patch : BasePlugin 
 {
-    public const string GUID = "dev.lecloutpanda.localmenu";
-    public const string Name = "Local Menu";
-    public const string Version = "1.0.3";
-    public override string Author => "LeCloutPanda";
-    public override string Link => "https://github.com/LeCloutPanda/LocalMenu";
-
     private static ConfigEntry<bool> HIDE_LASERS;
     private static ConfigEntry<bool> HIDE_CONTEXTMENU;
 
