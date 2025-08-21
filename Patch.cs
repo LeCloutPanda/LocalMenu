@@ -1,80 +1,76 @@
-﻿using FrooxEngine;
+﻿using BepInEx;
+using BepInEx.Configuration;
+using BepInExResoniteShim;
+using FrooxEngine;
 using HarmonyLib;
-using ResoniteModLoader;
 
-namespace LocalMenu
+namespace LocalMenu;
+
+[BepInPlugin(GUID, Name, Version)]
+public class Patch : BaseResonitePlugin
 {
-    public class Patch : ResoniteMod
+    public const string GUID = "dev.lecloutpanda.localmenu";
+    public const string Name = "Local Menu";
+    public const string Version = "1.0.2";
+    public override string Author => "LeCloutPanda";
+    public override string Link => "https://github.com/LeCloutPanda/LocalMenu";
+
+    private static ConfigEntry<bool> HIDE_LASERS;
+    private static ConfigEntry<bool> HIDE_CONTEXTMENU;
+
+    public override void Load()
     {
-        public override string Name => "Local Menu";
-        public override string Author => "LeCloutPanda";
-        public override string Version => "1.0.2";
-        public override string Link => "https://github.com/LeCloutPanda/LocalMenu/";
+        HIDE_LASERS = Config.Bind("General", "Hide Lasers", true, "Locally hide your lasers for everyone else");
+        HIDE_CONTEXTMENU = Config.Bind("General", "Hide Context Menu", true, "Locally hide your context menu for everyone else.");
 
-        public static ModConfiguration config;
+        HarmonyInstance.PatchAll();
+    }
 
-        [AutoRegisterConfigKey] private static ModConfigurationKey<bool> ENABLED = new ModConfigurationKey<bool>("Enabled", "", () => true);
-        [AutoRegisterConfigKey] private static ModConfigurationKey<bool> CONTEXT_MENU_VISIBLE = new ModConfigurationKey<bool>("Allow others to see your Context menu", "", () => true);
-        [AutoRegisterConfigKey] private static ModConfigurationKey<bool> INTERACTION_LASER_VISIBLE = new ModConfigurationKey<bool>("Allow others to see your Interaction Lasers", "", () => true);
-
-        public override void OnEngineInit()
+    [HarmonyPatch(typeof(ContextMenu))]
+    class PatchContextMenu
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("OnAwake")]
+        static void Postfix(ContextMenu __instance)
         {
-            config = GetConfiguration();
-            config.Save(true);
+            if (!HIDE_CONTEXTMENU.Value) return;
 
-            Harmony harmony = new Harmony($"dev.lecloutpanda.localmenu");
-            harmony.PatchAll();
-
-        }
-
-        [HarmonyPatch(typeof(ContextMenu))]
-        class PatchContextMenu
-        {
-            [HarmonyPostfix]
-            [HarmonyPatch("OnAwake")]
-            static void Postfix(ContextMenu __instance)
+            __instance.RunInUpdates(3, () =>
             {
-                if (!config.GetValue(ENABLED)) return;
+                if (__instance.Slot.ActiveUserRoot.ActiveUser != __instance.LocalUser)
+                    return;
 
-                __instance.RunInUpdates(3, () =>
-                {
-                    Msg("Creating value user override");
-
-                    if (__instance.Slot.ActiveUserRoot.ActiveUser != __instance.LocalUser)
-                        return;
-
-                    Slot slot = __instance.Slot;
-                    var temp = slot.AttachComponent<ValueUserOverride<bool>>();
-                    temp.Target.Value = slot.ActiveSelf_Field.ReferenceID;
-                    temp.PersistentOverrides.Value = false;
-                    temp.Default.Value = config.GetValue(CONTEXT_MENU_VISIBLE);
-                    temp.SetOverride(__instance.LocalUser, true);
-                });
-            }
+                Slot slot = __instance.Slot;
+                var temp = slot.AttachComponent<ValueUserOverride<bool>>();
+                temp.Target.Value = slot.ActiveSelf_Field.ReferenceID;
+                temp.PersistentOverrides.Value = false;
+                temp.Default.Value = false;
+                temp.SetOverride(__instance.LocalUser, true);
+            });
         }
+    }
 
-        [HarmonyPatch(typeof(InteractionLaser))]
-        class PatchInteractionLaser
+    [HarmonyPatch(typeof(InteractionLaser))]
+    class PatchInteractionLaser
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch("OnAwake")]
+        static void Postfix(InteractionLaser __instance)
         {
-            [HarmonyPostfix]
-            [HarmonyPatch("OnAwake")]
-            static void Postfix(InteractionLaser __instance)
+            if (!HIDE_LASERS.Value) return;
+
+            __instance.RunInUpdates(3, () =>
             {
-                if (!config.GetValue(ENABLED)) return;
+                if (__instance.Slot.ActiveUserRoot.ActiveUser != __instance.LocalUser)
+                    return;
 
-                __instance.RunInUpdates(3, () =>
-                {
-                    if (__instance.Slot.ActiveUserRoot.ActiveUser != __instance.LocalUser)
-                        return;
-
-                    Slot slot = __instance.Slot;
-                    var temp = slot.AttachComponent<ValueUserOverride<bool>>();
-                    temp.Target.Value = slot.ActiveSelf_Field.ReferenceID;
-                    temp.PersistentOverrides.Value = false;
-                    temp.Default.Value = config.GetValue(INTERACTION_LASER_VISIBLE);
-                    temp.SetOverride(__instance.LocalUser, true);
-                });
-            }
+                Slot slot = __instance.Slot;
+                var temp = slot.AttachComponent<ValueUserOverride<bool>>();
+                temp.Target.Value = slot.ActiveSelf_Field.ReferenceID;
+                temp.PersistentOverrides.Value = false;
+                temp.Default.Value = false;
+                temp.SetOverride(__instance.LocalUser, true);
+            });
         }
     }
 }
