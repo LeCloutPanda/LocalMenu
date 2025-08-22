@@ -16,8 +16,8 @@ public class Patch : BasePlugin
 
     public override void Load()
     {
-        HIDE_LASERS = Config.Bind("General", "Hide Lasers", true, "Locally hide your lasers for everyone else");
-        HIDE_CONTEXTMENU = Config.Bind("General", "Hide Context Menu", true, "Locally hide your context menu for everyone else.");
+        HIDE_LASERS = Config.Bind("General", "Hide Lasers", false, "Locally hide your lasers for everyone else");
+        HIDE_CONTEXTMENU = Config.Bind("General", "Hide Context Menu", false, "Locally hide your context menu for everyone else.");
 
         HarmonyInstance.PatchAll();
     }
