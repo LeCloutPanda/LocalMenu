@@ -7,6 +7,7 @@ using HarmonyLib;
 
 namespace LocalMenu;
 
+[BepInDependency("ResoniteModding.BepInExResoniteShim")]
 [ResonitePlugin("dev.lecloutpanda.localmenu", "Default Laser State", "1.0.3", "LeCloutPanda", "https://github.com/LeCloutPanda/localmenu")]
 public class Patch : BasePlugin 
 {
