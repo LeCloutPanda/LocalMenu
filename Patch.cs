@@ -7,8 +7,8 @@ using HarmonyLib;
 
 namespace LocalMenu;
 
-[BepInDependency("ResoniteModding.BepInExResoniteShim")]
-[ResonitePlugin("dev.lecloutpanda.localmenu", "Default Laser State", "1.0.3", "LeCloutPanda", "https://github.com/LeCloutPanda/localmenu")]
+[ResonitePlugin(PluginMetadata.GUID, PluginMetadata.NAME, PluginMetadata.VERSION, PluginMetadata.AUTHORS, PluginMetadata.REPOSITORY_URL)]
+[BepInDependency(BepInExResoniteShim.PluginMetadata.GUID, BepInDependency.DependencyFlags.HardDependency)]
 public class Patch : BasePlugin 
 {
     private static ConfigEntry<bool> HIDE_LASERS;
